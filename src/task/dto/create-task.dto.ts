@@ -4,7 +4,6 @@ import { IsBoolean, IsDate, IsEmpty, IsNumber, IsString } from "class-validator"
 export default class CreateTaskDto {
 
     @IsNumber()
-    @IsEmpty()
     @ApiProperty({example: '1', description: 'Existing user id'})
     readonly userId: number;
 
@@ -16,7 +15,7 @@ export default class CreateTaskDto {
     @ApiProperty({example: 'magic spell one', description: 'Description of task'})
     readonly description: string;
 
-    @IsDate()
+    @IsString()
     @ApiProperty({example: '11-02-2025', description: 'Deadline of task'})
     readonly deadline: Date;
 

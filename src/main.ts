@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ErrorInterceptor } from './interceptors/error/error.interceptor';
 import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
 
 async function bootstrap() {
@@ -19,7 +18,6 @@ async function bootstrap() {
     jsonDocumentUrl: 'swagger/json',
   });
   
-  // app.useGlobalInterceptors(new ErrorInterceptor());
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(process.env.PORT ?? 3000);
 }

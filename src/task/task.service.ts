@@ -13,11 +13,9 @@ export class TaskService {
   }
 
   async create(createTaskDto: CreateTaskDto) {
-    console.log('createTaskDTO', createTaskDto);
     const user = await this.userRepository.findOne({where: {id: createTaskDto.userId, isActive: true}});
-    console.log('User: ', user);
     if (!user) {
-      throw new HttpException(`User donot exisits with ${createTaskDto.userId}`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(`User donot exists with ${createTaskDto.userId}`, HttpStatus.BAD_REQUEST);
     }
     const task = this.taskRepository.create(createTaskDto);
     task.user = user;
@@ -46,7 +44,10 @@ export class TaskService {
     }
     task.title = updateTaskDto.title || task.title;
     task.description = updateTaskDto.description || task.description;
-    return `This action updates a #${id} task`;
+    task.deadline = updateTaskDto.deadline ? new Date(updateTaskDto.deadline) : new Date(task.deadline);
+    task.isCompleted = updateTaskDto.isCompleted ?? task.isCompleted;
+    this.taskRepository.save(task);
+    return 'Updated the task successfully';
   }
 
   async remove(id: number) {

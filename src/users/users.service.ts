@@ -50,6 +50,7 @@ export class UsersService {
       throw new HttpException(`User not found by ${id}`, HttpStatus.BAD_REQUEST);
     }
     user.name = updateUserDto.name || user.name;
+    this.userRepository.save(user);
     return 'Updated the username successfully';
   }
 
