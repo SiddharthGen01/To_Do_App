@@ -19,7 +19,7 @@ async function bootstrap() {
     jsonDocumentUrl: 'swagger/json',
   });
   
-  app.useGlobalInterceptors(new ErrorInterceptor());
+  // app.useGlobalInterceptors(new ErrorInterceptor());
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(process.env.PORT ?? 3000);
 }
