@@ -1,11 +1,15 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "src/users/entities/user.entity";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, TableForeignKey, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Task {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @ManyToOne(() => User, user => user.task)
+    user: User;
+
+    @Column({unique: true})
     title: string;
 
     @Column()
@@ -14,15 +18,15 @@ export class Task {
     @Column()
     deadline: Date;
 
-    @Column()
+    @Column({default: false})
     isCompleted: boolean;
 
-    @Column()
+    @Column({default: false})
     isDeleted: boolean;
 
-    @Column()
+    @CreateDateColumn()
     createdDate: Date;
 
-    @Column()
+    @UpdateDateColumn()
     updatedDate: Date;
 }

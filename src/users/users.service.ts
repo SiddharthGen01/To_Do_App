@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -11,24 +11,21 @@ export class UsersService {
 
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private userRepository: Repository<User>
   ) {}
   
   create(createUserDto: CreateUserDto) {
     const user = this.userRepository.create(createUserDto);
-    user.isActive =  true;
-    user.createdDate = new Date();
-    user.updatedDate = new Date();
     this.userRepository.save(user);
-    return createUserDto.name + ` save successfully`;
+    return `${createUserDto.name} save successfully`;
   }
 
   async login(loginUserDto: LoginUserDto) {
-    const user = await this.userRepository.find({where: {email: loginUserDto.email, password: loginUserDto.password, isActive: true}});
-    if (!user[0]){
-      return 'Sorry user not found!';
+    const user = await this.userRepository.findOne({where: {email: loginUserDto.email, password: loginUserDto.password, isActive: true}});
+    if (!user){
+      throw new HttpException('Sorry user not found!', HttpStatus.BAD_REQUEST);
     }
-    return `Welcome ${user[0]?.name}`;
+    return `Welcome ${user?.name}`;
   }
 
   findAll() {
@@ -36,22 +33,28 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    const users = await this.userRepository.find({where: {id: id, isActive: true}});
-    if (users.length > 0){
-      return users[0];
+    const user = await this.userRepository.findOne({where: {id: id, isActive: true}});
+    if (!user){
+      throw new HttpException(`User not found by ${id}`, HttpStatus.BAD_REQUEST);
     }
-    return `User not exists with ${id}`;
+    return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    let user = this.userRepository.find({where: {id: id, isActive: true}});
-    user[0].name = updateUserDto.name;
-    return `Updated the username successfully`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.userRepository.findOne({where: {id, isActive: true}});
+    if (!user){
+      throw new HttpException(`User not found by ${id}`, HttpStatus.BAD_REQUEST);
+    }
+    user.name = updateUserDto.name || user.name;
+    return 'Updated the username successfully';
   }
 
-  remove(id: number) {
-    let user = this.userRepository.find({where: {id: id, isActive: true}});
-    user[0].isActive = false;
-    return `Removed the users successfully`;
+  async remove(id: number) {
+    const user = await this.userRepository.findOne({where: {id, isActive: true}});
+    if (!user){
+      throw new HttpException(`User not found by ${id}`, HttpStatus.BAD_REQUEST);
+    }
+    user.isActive = false;
+    return 'Removed the users successfully';
   }
 }
