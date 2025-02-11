@@ -56,6 +56,7 @@ export class TaskService {
       throw new HttpException(`Task not found by the ${id}`, HttpStatus.BAD_REQUEST);
     }
     task.isDeleted = true;
+    this.taskRepository.save(task);
     return 'Task deleted successfully';
   }
 }

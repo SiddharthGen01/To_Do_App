@@ -60,6 +60,7 @@ export class UsersService {
       throw new HttpException(`User not found by ${id}`, HttpStatus.BAD_REQUEST);
     }
     user.isActive = false;
+    this.userRepository.save(user);
     return 'Removed the users successfully';
   }
 }
